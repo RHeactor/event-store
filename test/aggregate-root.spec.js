@@ -1,6 +1,6 @@
 'use strict'
 
-/* global describe, it, before */
+/* global describe, it */
 
 const AggregateRoot = require('../aggregate-root')
 const expect = require('chai').expect

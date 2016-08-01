@@ -1,10 +1,9 @@
 'use strict'
 
-/* global describe, it, before */
+/* global describe, it */
 
 const ModelEvent = require('../model-event')
 const expect = require('chai').expect
-const Errors = require('rheactor-value-objects/errors')
 
 describe('ModelEvent', () => {
   it('should have default values', (done) => {

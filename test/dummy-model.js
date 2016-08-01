@@ -4,7 +4,6 @@ const util = require('util')
 const AggregateRoot = require('../aggregate-root')
 const UnhandledDomainEvent = require('rheactor-value-objects/errors/unhandled-domain-event')
 
-
 function DummyModel (email) {
   AggregateRoot.call(this)
   this.email = email
@@ -16,8 +15,6 @@ util.inherits(DummyModel, AggregateRoot)
  * @return {ModelEvent} event
  */
 DummyModel.prototype.applyEvent = function (event) {
-  let self = this
-  let data = event.data
   switch (event.name) {
     case 'DummyCreatedEvent':
       this.email = event.data.email
