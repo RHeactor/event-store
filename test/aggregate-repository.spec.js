@@ -25,10 +25,10 @@ describe('AggregateRepository', function () {
   })
 
   describe('.add()', () => {
-    it('should add entities', (done) => {
+    it('should add entities', () => {
       const john = new DummyModel('john.doe@example.invalid')
       const jane = new DummyModel('jane.doe@example.invalid')
-      Promise.join(repository.add(john), repository.add(jane))
+      return Promise.join(repository.add(john), repository.add(jane))
         .spread((event1, event2) => {
           expect(event1).to.be.instanceOf(ModelEvent)
           expect(event1.name).to.equal('DummyCreatedEvent')
@@ -40,16 +40,15 @@ describe('AggregateRepository', function () {
               expect(u1.aggregateVersion()).to.equal(1)
               expect(u2.email).to.equal('jane.doe@example.invalid')
               expect(u2.aggregateVersion()).to.equal(1)
-              done()
             })
         })
     })
   })
 
   describe('.remove()', () => {
-    it('should remove entities', (done) => {
+    it('should remove entities', () => {
       const mike = new DummyModel('mike.doe@example.invalid')
-      repository.add(mike)
+      return repository.add(mike)
         .then((createdEvent) => {
           return repository.getById(createdEvent.aggregateId)
         })
@@ -61,21 +60,20 @@ describe('AggregateRepository', function () {
               expect(deletedEvent).to.be.instanceOf(ModelEvent)
               expect(deletedEvent.name).to.equal('DummyDeletedEvent')
               expect(persistedMike.isDeleted()).to.equal(true)
-              done()
             })
         })
     })
   })
 
   describe('.findById()', () => {
-    it('should return undefined if entity not found', (done) => {
-      repository.findById(9999999)
+    it(
+      'should return undefined if entity not found',
+      () => repository.findById(9999999)
         .then((user) => {
           expect(user).to.equal(undefined)
-          done()
         })
-    })
-    it('should return undefined if entity is deleted', (done) => {
+    )
+    it('should return undefined if entity is deleted', () => {
       const jim = new DummyModel('jim.doe@example.invalid')
       repository.add(jim)
         .then((createdEvent) => {
@@ -88,7 +86,6 @@ describe('AggregateRepository', function () {
               repository.findById(persistedJim.aggregateId())
                 .then((user) => {
                   expect(user).to.equal(undefined)
-                  done()
                 })
             })
         })
@@ -96,16 +93,16 @@ describe('AggregateRepository', function () {
   })
 
   describe('.getById()', () => {
-    it('should throw an EntryNotFoundError if entity not found', (done) => {
-      Promise.try(repository.getById.bind(repository, 9999999))
+    it(
+      'should throw an EntryNotFoundError if entity not found',
+      () => Promise.try(repository.getById.bind(repository, 9999999))
         .catch(err => EntryNotFoundError.is(err), (err) => {
           expect(err.message).to.be.contain('dummy with id "9999999" not found.')
-          done()
         })
-    })
-    it('should throw an EntryDeletedError if entity is deleted', (done) => {
+    )
+    it('should throw an EntryDeletedError if entity is deleted', () => {
       const jack = new DummyModel('jack.doe@example.invalid')
-      repository.add(jack)
+      return repository.add(jack)
         .then((createdEvent) => {
           return repository.getById(createdEvent.aggregateId)
         })
@@ -118,7 +115,6 @@ describe('AggregateRepository', function () {
                 .catch(err => EntryDeletedError.is(err), (err) => {
                   expect(err.message).to.be.contain('dummy with id "' + persistedJack.aggregateId() + '" is deleted.')
                   expect(err.entry).to.deep.equal(persistedJack)
-                  done()
                 })
             })
         })
@@ -126,14 +122,14 @@ describe('AggregateRepository', function () {
   })
 
   describe('.findAll()', () => {
-    it('should return all entities', (done) => {
-      repository.findAll()
+    it(
+      'should return all entities',
+      () => repository.findAll()
         .then((entities) => {
           expect(entities.length).to.equal(2)
           expect(entities[0].email).to.equal('john.doe@example.invalid')
           expect(entities[1].email).to.equal('jane.doe@example.invalid')
-          done()
         })
-    })
+    )
   })
 })

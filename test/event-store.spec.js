@@ -17,9 +17,9 @@ describe('EventStore', function () {
     eventStore = new EventStore('user', helper.redis, 1)
   })
 
-  it('should store an event', (done) => {
+  it('should store an event', () => {
     let d1 = new Date('2016-01-02T03:04:05+00:00').getTime()
-    Promise
+    return Promise
       .join(
         eventStore.persist(new ModelEvent(17, 'SomeEvent', {foo: 'bar'}, d1)),
         eventStore.persist(new ModelEvent(17, 'SomeOtherEvent', {foo: 'baz'}, null, 'John Doe'))
@@ -41,7 +41,6 @@ describe('EventStore', function () {
         expect(res[1].createdAt).to.be.a('Number')
         expect(res[1].createdAt).to.be.above(d1) // Use Date.now() as default createdAt
         expect(res[1].createdBy).to.equal('John Doe')
-        done()
       })
   })
 })
