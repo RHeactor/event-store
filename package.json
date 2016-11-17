@@ -36,7 +36,7 @@
     "mocha-lcov-reporter": "^1.2.0",
     "standard": "^8.0.0",
     "validate-commit-msg": "^2.6.1",
-    "semantic-release": "^4.3.5"
+    "semantic-release": "^6.3.2"
   },
   "config": {
     "ghooks": {
