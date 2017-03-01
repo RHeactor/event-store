@@ -10,7 +10,6 @@ import {irreducible} from 'tcomb'
  * @deprecated Use ImmutableAggregateRepository
  */
 export class AggregateRepository {
-
   /**
    * Creates a new aggregate repository
    *

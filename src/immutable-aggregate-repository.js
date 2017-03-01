@@ -7,7 +7,6 @@ import {MaybeStringType, AggregateIdType} from './types'
 import {irreducible, String as StringType, Function as FunctionType, Object as ObjectType} from 'tcomb'
 
 export class ImmutableAggregateRepository {
-
   /**
    * Creates a new aggregate repository
    *

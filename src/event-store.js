@@ -81,5 +81,4 @@ export class EventStore {
         return new ModelEvent(aggregateId, event.eventType, event.eventPayload, createdAt, event.eventCreatedBy)
       })
   }
-
 }
