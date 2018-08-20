@@ -126,6 +126,25 @@ export class ImmutableAggregateRepository {
   }
 
   /**
+   * Load aggregate by id including deleted aggregates
+   *
+   * @param {String} id
+   * @returns {Promise.<AggregateRoot>}
+   * @throws {EntryNotFoundError} if entity is not found
+   */
+  findByIdWithDeleted (id) {
+    AggregateIdType(id, ['ImmutableAggregateRepository', 'getById()', 'id:AggregateId'])
+    return this.eventStore.fetch(id)
+      .reduce((aggregate, event) => this.applyEvent(event, aggregate === false ? undefined : aggregate), false)
+      .then(aggregate => {
+        if (!aggregate) {
+          throw new EntryNotFoundError(this.alias + ' with id "' + id + '" not found.')
+        }
+        return aggregate
+      })
+  }
+
+  /**
    * Returns true if x is of type ImmutableAggregateRepository
    *
    * @param {object} x
