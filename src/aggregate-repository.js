@@ -97,6 +97,18 @@ export class AggregateRepository {
   }
 
   /**
+   * Load aggregate by id including deleted aggregates
+   *
+   * @param {String} id
+   * @returns {Promise.<AggregateRoot>} or undefined if not found
+   */
+  findByIdWithDeleted (id) {
+    AggregateIdType(id)
+    return this.eventStore.fetch(id)
+      .then(events => this.aggregate(events))
+  }
+
+  /**
    * Creates an instance of this repositories aggregate root by applying all events
    *
    * NOTE: Because the signature of the AggregateRoot's constructor may change
