@@ -38,7 +38,7 @@
     "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.4.0",
     "husky": "^0.13.1",
-    "mocha": "^3.2.0",
+    "mocha": "^6.1.2",
     "mocha-lcov-reporter": "^1.2.0",
     "nyc": "^10.1.2",
     "semantic-release": "^6.3.2",
