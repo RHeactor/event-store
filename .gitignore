@@ -2,5 +2,6 @@
 /npm-debug.log
 /coverage
 /dist
+/built
 /.nyc_output
 /instrumented-src
