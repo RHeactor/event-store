@@ -4,15 +4,14 @@ Promise.promisifyAll(RedisClient.prototype)
 Promise.promisifyAll(Multi.prototype)
 
 const client = createClient({
-  host: '172.17.0.3'
+  host: process.env.REDIS_HOST
 })
 
 client.select(8)
 
 export default {
-  clearDb() {
+  clearDb () {
     return client.flushdb()
-  }, 
+  },
   redis: client
-
 }
