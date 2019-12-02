@@ -2,4 +2,4 @@
 
 dist:
 	rm -rf $@
-	./node_modules/.bin/babel src -d $@
+	./node_modules/.bin/tsc

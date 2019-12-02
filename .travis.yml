@@ -7,7 +7,7 @@ notifications:
 services:
   - redis-server
 before_install:
-  - npm install -g npm-install-peers
+  - npm install -g npm-install-peers typescript
 install:
   - npm install
   - npm prune

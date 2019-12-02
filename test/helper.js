@@ -1,12 +1,18 @@
 import {Promise} from 'bluebird'
-import redis from 'redis'
-Promise.promisifyAll(redis.RedisClient.prototype)
-Promise.promisifyAll(redis.Multi.prototype)
+import { RedisClient, Multi, createClient } from 'redis'
+Promise.promisifyAll(RedisClient.prototype)
+Promise.promisifyAll(Multi.prototype)
 
-const client = redis.createClient()
+const client = createClient({
+  host: '172.17.0.3'
+})
+
 client.select(8)
 
 export default {
-  clearDb: client.flushdb.bind(client),
+  clearDb() {
+    return client.flushdb()
+  }, 
   redis: client
+
 }
