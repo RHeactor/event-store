@@ -7,11 +7,10 @@ notifications:
 services:
   - redis-server
 before_install:
-  - npm install -g npm-install-peers typescript
+  - npm install -g typescript
 install:
   - npm install
   - npm prune
-  - npm-install-peers
 script:
   - npm run lint
   - npm run test:coverage-travis
@@ -24,4 +23,4 @@ branches:
 matrix:
   include:
     - node_js: 'node'
-    - node_js: '6'
+    - node_js: '10'

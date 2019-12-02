@@ -22,73 +22,58 @@ describe('AggregateRepository', function () {
   })
 
   describe('.add()', () => {
-    it('should add entities', () => {
+    it('should add entities', async () => {
       const john = new DummyModel('john.doe@example.invalid')
       const jane = new DummyModel('jane.doe@example.invalid')
-      return Promise.join(repository.add(john, 'someAuthor'), repository.add(jane))
-        .spread((event1, event2) => {
-          expect(event1).to.be.instanceOf(ModelEvent)
-          expect(event1.name).to.equal('DummyCreatedEvent')
-          expect(event1.createdBy).to.equal('someAuthor')
-          expect(event2).to.be.instanceOf(ModelEvent)
-          expect(event2.createdBy).to.equal(undefined)
-          return Promise
-            .join(repository.getById(event1.aggregateId), repository.getById(event2.aggregateId))
-            .spread((u1, u2) => {
-              expect(u1.email).to.equal('john.doe@example.invalid')
-              expect(u1.aggregateVersion()).to.equal(1)
-              expect(u2.email).to.equal('jane.doe@example.invalid')
-              expect(u2.aggregateVersion()).to.equal(1)
-            })
-        })
+      const [event1, event2] = await Promise.all([
+        repository.add(john, 'someAuthor'),
+        repository.add(jane)
+      ])
+      expect(event1).to.be.instanceOf(ModelEvent)
+      expect(event1.name).to.equal('DummyCreatedEvent')
+      expect(event1.createdBy).to.equal('someAuthor')
+      expect(event2).to.be.instanceOf(ModelEvent)
+      expect(event2.createdBy).to.equal(undefined)
+      const [u1, u2] = await Promise
+        .all([
+          repository.getById(event1.aggregateId),
+          repository.getById(event2.aggregateId)
+        ])
+      expect(u1.email).to.equal('john.doe@example.invalid')
+      expect(u1.aggregateVersion()).to.equal(1)
+      expect(u2.email).to.equal('jane.doe@example.invalid')
+      expect(u2.aggregateVersion()).to.equal(1)
     })
   })
 
   describe('.remove()', () => {
-    it('should remove entities', () => {
+    it('should remove entities', async () => {
       const mike = new DummyModel('mike.doe@example.invalid')
-      return repository.add(mike)
-        .then((createdEvent) => {
-          return repository.getById(createdEvent.aggregateId)
-        })
-        .then((persistedMike) => {
-          expect(persistedMike.isDeleted()).to.equal(false)
-          return repository
-            .remove(persistedMike, 'someAuthor')
-            .then((deletedEvent) => {
-              expect(deletedEvent).to.be.instanceOf(ModelEvent)
-              expect(deletedEvent.name).to.equal('DummyDeletedEvent')
-              expect(deletedEvent.createdBy).to.equal('someAuthor')
-              expect(persistedMike.isDeleted()).to.equal(true)
-            })
-        })
+      const createdEvent = await repository.add(mike)
+      const persistedMike = await repository.getById(createdEvent.aggregateId)
+      expect(persistedMike.isDeleted()).to.equal(false)
+      const deletedEvent = await repository
+        .remove(persistedMike, 'someAuthor')
+      expect(deletedEvent).to.be.instanceOf(ModelEvent)
+      expect(deletedEvent.name).to.equal('DummyDeletedEvent')
+      expect(deletedEvent.createdBy).to.equal('someAuthor')
+      expect(persistedMike.isDeleted()).to.equal(true)
     })
   })
 
   describe('.findById()', () => {
-    it(
-      'should return undefined if entity not found',
-      () => repository.findById('9999999')
-        .then((user) => {
-          expect(user).to.equal(undefined)
-        })
-    )
-    it('should return undefined if entity is deleted', () => {
+    it('should return undefined if entity not found', async () => {
+      const user = await repository.findById('9999999')
+      expect(user).to.equal(undefined)
+    })
+    it('should return undefined if entity is deleted', async () => {
       const jim = new DummyModel('jim.doe@example.invalid')
-      repository.add(jim)
-        .then((createdEvent) => {
-          return repository.getById(createdEvent.aggregateId)
-        })
-        .then((persistedJim) => {
-          return repository
-            .remove(persistedJim)
-            .then(() => {
-              repository.findById(persistedJim.aggregateId())
-                .then((user) => {
-                  expect(user).to.equal(undefined)
-                })
-            })
-        })
+      const createdEvent = await repository.add(jim)
+      const persistedJim = await repository.getById(createdEvent.aggregateId)
+      await repository
+        .remove(persistedJim)
+      const user = await repository.findById(persistedJim.aggregateId())
+      expect(user).to.equal(undefined)
     })
   })
 
@@ -125,15 +110,12 @@ describe('AggregateRepository', function () {
   })
 
   describe('.findAll()', () => {
-    it(
-      'should return all entities',
-      () => repository.findAll()
-        .then((entities) => {
-          expect(entities.length).to.equal(2)
-          expect(entities[0].email).to.equal('john.doe@example.invalid')
-          expect(entities[1].email).to.equal('jane.doe@example.invalid')
-        })
-    )
+    it('should return all entities', async () => {
+      const entities = await repository.findAll()
+      expect(entities.length).to.equal(2)
+      expect(entities[0].email).to.equal('john.doe@example.invalid')
+      expect(entities[1].email).to.equal('jane.doe@example.invalid')
+    })
   })
 
   describe('.is()', () => {
