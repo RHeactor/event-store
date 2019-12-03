@@ -4,7 +4,7 @@
   "version": "0.0.0-development",
   "main": "dist/index.js",
   "scripts": {
-    "test": "NODE_ENV=testing mocha --reporter=dot -r ts-node/register test/\\*.js",
+    "test": "NODE_ENV=testing mocha --reporter=dot -r ts-node/register test/\\*.{js,ts}",
     "test:coverage": "NODE_ENV=nyc tsc > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
     "test:coverage-travis": "npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
     "lint": "standard",

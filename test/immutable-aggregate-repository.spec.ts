@@ -9,8 +9,9 @@ import {EntryNotFoundError, EntryDeletedError, UnhandledDomainEventError} from '
 import { assert } from 'tcomb'
 
 class DummyModel extends ImmutableAggregateRoot {
+  email: string
+  
   constructor (email, meta) {
-    AggregateMetaType(meta, ['DummyModel', 'meta:AggregateMeta'])
     super(meta)
     this.email = email
   }
