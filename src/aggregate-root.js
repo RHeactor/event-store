@@ -29,7 +29,7 @@ export class AggregateRoot {
    * @param {Date} createdAt
    * @param {String|undefined} createdBy
    */
-  persisted (aggregateId, createdAt = new Date(), createdBy) {
+  persisted (aggregateId, createdAt = new Date(), createdBy = undefined) {
     AggregateIdType(aggregateId)
     DateType(createdAt)
     this.$aggregateMeta.id = aggregateId
@@ -143,7 +143,6 @@ export class AggregateRoot {
    * Should return the modified aggregate.
    *
    * @param {ModelEvent} event
-   * @returns {AggregateRoot}
    */
   applyEvent (event) {
     ModelEventType(event)

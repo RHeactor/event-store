@@ -120,10 +120,7 @@ describe('AggregateRepository', function () {
 
   describe('.is()', () => {
     it('should return true, if AggregateRepository is passed', () => {
-      expect(AggregateRepository.is(new AggregateRepository({
-        applyEvent: () => {
-        }
-      }, 'foo', {}))).to.equal(true)
+      expect(AggregateRepository.is(new AggregateRepository(DummyModel, 'foo', {}))).to.equal(true)
     })
     it('should return true, if a similar object is passed', () => {
       const repo = {

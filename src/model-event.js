@@ -12,7 +12,7 @@ export class ModelEvent {
    * @param {Date} createdAt The time of the creation of the event
    * @param {String} createdBy Information about the author of the event
    */
-  constructor (aggregateId, name, data = {}, createdAt = new Date(), createdBy) {
+  constructor (aggregateId, name, data = {}, createdAt = new Date(), createdBy = undefined) {
     AggregateIdType(aggregateId)
     StringType(name)
     ObjectType(data)

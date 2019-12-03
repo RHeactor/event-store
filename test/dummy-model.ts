@@ -2,15 +2,10 @@ import {AggregateRoot} from '../src/aggregate-root'
 import {UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
 
 export class DummyModel extends AggregateRoot {
-  constructor (email) {
+  constructor (public email:string) {
     super()
-    this.email = email
   }
 
-  /**
-   * @param {ModelEvent} event
-   * @return {ModelEvent} event
-   */
   applyEvent (event) {
     switch (event.name) {
       case 'DummyCreatedEvent':

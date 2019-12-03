@@ -9,7 +9,7 @@ export class AggregateMeta {
    * @param {Date} createdAt
    * @param {Date|undefined} updatedAt
    * @param {Date|undefined} deletedAt
-   * @param {Number} createdBy
+   * @param {String} createdBy
    */
   constructor (id, version, createdAt = new Date(), updatedAt = undefined, deletedAt = undefined, createdBy = undefined) {
     this._id = AggregateIdType(id, ['AggregateMeta', 'id:AggregateId'])

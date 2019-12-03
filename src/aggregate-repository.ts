@@ -9,20 +9,15 @@ import {irreducible} from 'tcomb'
 /**
  * @deprecated Use ImmutableAggregateRepository
  */
-export class AggregateRepository {
+export class AggregateRepository<T extends AggregateRoot> {
+  aggregateAliasPrefix: string
+  eventStore: EventStore
   /**
    * Creates a new aggregate repository
-   *
-   * @param {AggregateRoot} aggregateRoot
-   * @param {String} aggregateAlias
-   * @param {redis.client} redis
    */
-  constructor (aggregateRoot, aggregateAlias, redis) {
-    this.aggregateRoot = aggregateRoot
-    this.aggregateAlias = aggregateAlias
+  constructor (public aggregateRoot:  { new (...args: any[]): T; }, public aggregateAlias: string, public redis: any) {
     this.aggregateAliasPrefix = aggregateAlias.charAt(0).toUpperCase() + aggregateAlias.slice(1)
     this.eventStore = new EventStore(aggregateAlias, redis)
-    this.redis = redis
   }
 
   /**
