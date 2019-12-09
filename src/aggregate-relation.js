@@ -22,15 +22,16 @@ export class AggregateRelation {
    * @param {String} relatedId
    * @returns {Promise.<Array.<AggregateRoot>>}
    */
-  findByRelatedId (relation, relatedId) {
+  async findByRelatedId (relation, relatedId) {
     StringType(relation)
     AggregateIdType(relatedId)
     let self = this
-    return self.redis.smembersAsync(self.repository.aggregateAlias + ':' + relation + ':' + relatedId)
-      .map(self.repository.findById.bind(self.repository))
-      .filter((model) => {
-        return model !== undefined
-      })
+    const items = await self.redis.smembers(self.repository.aggregateAlias + ':' + relation + ':' + relatedId)
+    const models = await Promise.all(items.map(self.repository.findById.bind(self.repository)))
+
+    return models.filter((model) => {
+      return model !== undefined
+    })
   }
 
   /**
@@ -49,7 +50,7 @@ export class AggregateRelation {
     AggregateIdType(relatedId)
     AggregateIdType(aggregateId)
     let self = this
-    return self.redis.saddAsync(self.repository.aggregateAlias + ':' + relation + ':' + relatedId, aggregateId)
+    return self.redis.sadd(self.repository.aggregateAlias + ':' + relation + ':' + relatedId, aggregateId)
   }
 
   /**
@@ -65,6 +66,6 @@ export class AggregateRelation {
     AggregateIdType(relatedId)
     AggregateIdType(aggregateId)
     let self = this
-    return self.redis.sremAsync(self.repository.aggregateAlias + ':' + relation + ':' + relatedId, aggregateId)
+    return self.redis.srem(self.repository.aggregateAlias + ':' + relation + ':' + relatedId, aggregateId)
   }
 }

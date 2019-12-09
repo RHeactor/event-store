@@ -1,7 +1,6 @@
 /* global describe, it, before */
 
 import {AggregateIndex} from '../src/aggregate-index'
-import {Promise} from 'bluebird'
 import helper from './helper'
 import {expect} from 'chai'
 import {EntryAlreadyExistsError} from '@resourcefulhumans/rheactor-errors'

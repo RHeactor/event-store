@@ -37,7 +37,7 @@ export class ImmutableAggregateRepository {
   add (data, createdBy) {
     ObjectType(data, ['ImmutableAggregateRepository', 'add()', 'data:Object'])
     MaybeStringType(createdBy, ['ImmutableAggregateRepository', 'add()', 'createdBy:?String'])
-    return this.redis.incrAsync(this.alias + ':id')
+    return this.redis.incr(this.alias + ':id')
       .then((id) => this.persistEvent(new ModelEvent('' + id, this.prefix + 'CreatedEvent', data, new Date(), createdBy)))
   }
 
@@ -89,8 +89,8 @@ export class ImmutableAggregateRepository {
    *
    * @returns {Promise.<Array.<AggregateRoot>>}
    */
-  findAll () {
-    return this.redis.getAsync(this.alias + ':id')
+  async findAll () {
+    const items = await this.redis.get(this.alias + ':id')
       .then((maxId) => {
         let promises = []
         for (let i = 1; i <= maxId; i++) {
@@ -98,9 +98,8 @@ export class ImmutableAggregateRepository {
         }
         return Promise.all(promises)
       })
-      .filter((item) => {
-        return item !== undefined
-      })
+
+    return items.filter(item => item !== undefined)
   }
 
   /**

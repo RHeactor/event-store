@@ -1,12 +1,12 @@
 /* global describe, it, before */
 
 import {AggregateRepository} from '../src/aggregate-repository'
-import {Promise} from 'bluebird'
 import helper from './helper'
 import {expect} from 'chai'
 import {DummyModel} from './dummy-model'
 import {ModelEvent} from '../src/model-event'
 import {EntryNotFoundError, EntryDeletedError} from '@resourcefulhumans/rheactor-errors'
+import { assert } from 'tcomb'
 
 describe('AggregateRepository', function () {
   before(helper.clearDb)
@@ -78,34 +78,27 @@ describe('AggregateRepository', function () {
   })
 
   describe('.getById()', () => {
-    it(
-      'should throw an EntryNotFoundError if entity not found',
-      () => Promise.try(repository.getById.bind(repository, '9999999'))
-        .catch(err => EntryNotFoundError.is(err), (err) => {
-          expect(err.message).to.be.contain('dummy with id "9999999" not found.')
-        })
-    )
-    it('should throw an EntryDeletedError if entity is deleted', () => {
+    it('should throw an EntryNotFoundError if entity not found', async () => {
+          try {
+            await repository.getById.bind(repository, '9999999')
+          } catch (err) {
+            assert(EntryNotFoundError.is(err))
+            expect(err.message).to.be.contain('dummy with id "9999999" not found.')
+          }
+      })
+    it('should throw an EntryDeletedError if entity is deleted', async () => {
       const jack = new DummyModel('jack.doe@example.invalid')
-      return repository.add(jack)
-        .then((createdEvent) => {
-          return repository.getById(createdEvent.aggregateId)
-        })
-        .then((persistedJack) => {
-          return repository
-            .remove(persistedJack)
-            .then(() => {
-              Promise
-                .try(repository.getById.bind(repository, persistedJack.aggregateId()))
-                .catch(err => EntryDeletedError.is(err), (err) => {
-                  expect(err.message).to.be.contain('dummy with id "' + persistedJack.aggregateId() + '" is deleted.')
-                  expect(err.entry).to.deep.equal(persistedJack)
-                })
-                .catch(err => {
-                  console.log(err)
-                })
-            })
-        })
+      const createdEvent = await repository.add(jack)
+      const persistedJack = await repository.getById(createdEvent.aggregateId)
+      await repository.remove(persistedJack)
+            
+      try {
+        await repository.getById.bind(repository, persistedJack.aggregateId())
+      } catch (err ) {
+        assert(EntryDeletedError.is(err))
+        expect(err.message).to.be.contain('dummy with id "' + persistedJack.aggregateId() + '" is deleted.')
+        expect(err.entry).to.deep.equal(persistedJack)
+      }
     })
   })
 

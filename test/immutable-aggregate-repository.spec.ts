@@ -1,7 +1,6 @@
 /* global describe, it, before */
 
 import {ImmutableAggregateRepository, ImmutableAggregateRoot, AggregateMeta, AggregateMetaType} from '../src'
-import {Promise} from 'bluebird'
 import helper from './helper'
 import {expect} from 'chai'
 import {ModelEvent} from '../src/model-event'

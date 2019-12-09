@@ -1,7 +1,6 @@
 import {EventStore} from './event-store'
 import {ModelEvent, ModelEventType, ModelEventTypeList} from './model-event'
 import {EntryNotFoundError, EntryDeletedError} from '@resourcefulhumans/rheactor-errors'
-import {Promise} from 'bluebird'
 import {AggregateRoot, AggregateRootType} from './aggregate-root'
 import {MaybeStringType, AggregateIdType} from './types'
 import {irreducible} from 'tcomb'
@@ -33,7 +32,7 @@ export class AggregateRepository<T extends AggregateRoot> {
   add (aggregate, createdBy) {
     AggregateRootType(aggregate)
     MaybeStringType(createdBy)
-    return this.redis.incrAsync(this.aggregateAlias + ':id')
+    return this.redis.incr(this.aggregateAlias + ':id')
       .then((id) => {
         const event = new ModelEvent('' + id, this.aggregateAliasPrefix + 'CreatedEvent', aggregate, new Date(), createdBy)
         return this.persistEvent(event)
@@ -138,8 +137,8 @@ export class AggregateRepository<T extends AggregateRoot> {
    *
    * @returns {Promise.<Array.<AggregateRoot>>}
    */
-  findAll () {
-    return this.redis.getAsync(this.aggregateAlias + ':id')
+  async findAll () {
+    const items = await this.redis.get(this.aggregateAlias + ':id')
       .then((maxId) => {
         let promises = []
         for (let i = 1; i <= maxId; i++) {
@@ -147,9 +146,8 @@ export class AggregateRepository<T extends AggregateRoot> {
         }
         return Promise.all(promises)
       })
-      .filter((item) => {
-        return item !== undefined
-      })
+    
+    return items.filter(item => item !== undefined)
   }
 
   /**

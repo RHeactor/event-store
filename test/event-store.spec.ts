@@ -2,7 +2,6 @@
 
 import {EventStore} from '../src/event-store'
 import {ModelEvent} from '../src/model-event'
-import {Promise} from 'bluebird'
 import helper from './helper'
 import {expect} from 'chai'
 
@@ -40,7 +39,7 @@ describe('EventStore', function () {
 
   it('should store handle events without a created date', async () => {
     let d1 = new Date('1970-01-01T00:00:00+00:00')
-    await Promise.resolve(helper.redis.rpushAsync('user.events.42', JSON.stringify({eventType: 'SomeEventWithOutCreatedDate'})))
+    await Promise.resolve(helper.redis.rpush('user.events.42', JSON.stringify({eventType: 'SomeEventWithOutCreatedDate'})))
     const res = await eventStore.fetch('42')
     expect(res.length).to.equal(1)
     expect(res[0]).to.be.instanceof(ModelEvent)

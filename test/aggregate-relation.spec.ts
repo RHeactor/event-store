@@ -2,7 +2,6 @@
 
 import {AggregateRelation} from '../src/aggregate-relation'
 import {AggregateRepository} from '../src/aggregate-repository'
-import {Promise} from 'bluebird'
 import helper from './helper'
 import {expect} from 'chai'
 import {DummyModel} from './dummy-model'

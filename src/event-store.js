@@ -43,7 +43,7 @@ export class EventStore {
     if (event.createdBy) {
       data.eventCreatedBy = event.createdBy
     }
-    return Promise.resolve(this.redis.rpushAsync(aggregateEvents, JSON.stringify(data)))
+    return Promise.resolve(this.redis.rpush(aggregateEvents, JSON.stringify(data)))
   }
 
   /**
@@ -59,7 +59,7 @@ export class EventStore {
     let fetchedEvents = []
     let fetchEvents = start => {
       return Promise
-        .resolve(this.redis.lrangeAsync(aggregateEvents, start, start + this.numEvents - 1))
+        .resolve(this.redis.lrange(aggregateEvents, start, start + this.numEvents - 1))
         .then((res) => {
           return Promise
             .map(res, (e) => {

@@ -21,7 +21,7 @@ export class AggregateIndex {
    * @returns {Promise}
    */
   add (type, value, aggregateId) {
-    return this.redis.hmsetAsync(this.aggregate + '.' + type + '.index', value, aggregateId)
+    return this.redis.hmset(this.aggregate + '.' + type + '.index', value, aggregateId)
   }
 
   /**
@@ -36,7 +36,7 @@ export class AggregateIndex {
    */
   addIfNotPresent (type, value, aggregateId) {
     let index = this.aggregate + '.' + type + '.index'
-    return this.redis.evalAsync(
+    return this.redis.eval(
       'local v = redis.call(\'HMGET\',ARGV[1],ARGV[2]) if v[1] == false then redis.call(\'HMSET\',ARGV[1],ARGV[2],ARGV[3]) return true else return false end',
       0, index, value, aggregateId
     )
@@ -59,7 +59,7 @@ export class AggregateIndex {
    */
   remove (type, value, aggregateId) {
     let index = this.aggregate + '.' + type + '.index'
-    return this.redis.hdelAsync(index, value, aggregateId)
+    return this.redis.hdel(index, value, aggregateId)
   }
 
   /**
@@ -73,7 +73,7 @@ export class AggregateIndex {
    */
   addToListIfNotPresent (type, aggregateId) {
     let index = this.aggregate + '.' + type + '.list'
-    return this.redis.saddAsync(index, aggregateId)
+    return this.redis.sadd(index, aggregateId)
       .then((res) => {
         if (!res) {
           throw new EntryAlreadyExistsError('Aggregate "' + aggregateId + '" already member of "' + index + '".')
@@ -90,7 +90,7 @@ export class AggregateIndex {
    */
   getList (type) {
     let index = this.aggregate + '.' + type + '.list'
-    return this.redis.smembersAsync(index)
+    return this.redis.smembers(index)
   }
 
   /**
@@ -103,7 +103,7 @@ export class AggregateIndex {
    */
   removeFromList (type, aggregateId) {
     let index = this.aggregate + '.' + type + '.list'
-    return this.redis.sremAsync(index, aggregateId)
+    return this.redis.srem(index, aggregateId)
   }
 
   /**
@@ -113,11 +113,12 @@ export class AggregateIndex {
    * @param {String} value
    * @returns {Promise}
    */
-  find (type, value) {
-    return this.get(type, value)
-      .catch(err => EntryNotFoundError.is(err), () => {
-        return null
-      })
+  async find (type, value) {
+    try {
+      return await this.get(type, value)
+    } catch (err) {
+      return null
+    }
   }
 
   /**
@@ -130,7 +131,7 @@ export class AggregateIndex {
    */
   get (type, value) {
     return this.redis
-      .hmgetAsync(this.aggregate + '.' + type + '.index', value)
+      .hmget(this.aggregate + '.' + type + '.index', value)
       .then((res) => {
         if (res[0] === null) {
           throw new EntryNotFoundError('Aggregate not found with ' + type + ' "' + value + '"')
@@ -147,6 +148,6 @@ export class AggregateIndex {
    */
   getAll (type) {
     return this.redis
-      .hvalsAsync(this.aggregate + '.' + type + '.index')
+      .hvals(this.aggregate + '.' + type + '.index')
   }
 }

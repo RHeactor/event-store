@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "NODE_ENV=testing mocha --reporter=dot -r ts-node/register test/\\*.{js,ts}",
+    "test-watch": "NODE_ENV=testing mocha --reporter=dot -r ts-node/register test/\\*.{js,ts} --watch --watch-extensions ts",
     "test:coverage": "NODE_ENV=nyc tsc > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
     "test:coverage-travis": "npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
     "lint": "standard",
@@ -23,9 +24,9 @@
   },
   "homepage": "https://github.com/ResourcefulHumans/rheactor-event-store#readme",
   "dependencies": {
-    "redis": "^2.6.5",
     "@resourcefulhumans/rheactor-errors": "1.x",
-    "bluebird": "^3.4.7",
+    "handy-redis": "^1.6.2",
+    "redis": "^2.8.0",
     "tcomb": "^3.2.16"
   },
   "devDependencies": {
