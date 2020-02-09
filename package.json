@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/ResourcefulHumans/rheactor-event-store#readme",
   "dependencies": {
-    "redis": "^2.6.5"
+    "redis": "^3.0.1"
   },
   "peerDependencies": {
     "@resourcefulhumans/rheactor-errors": "1.x",
